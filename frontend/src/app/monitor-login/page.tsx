@@ -9,8 +9,12 @@ export default function MonitorLoginPage() {
   const router = useRouter();
 
   function handleLogin(user: User) {
-    if (user.role === "ADMIN" || user.role === "MONITOR") {
+    if (user.role === "ADMIN") {
+      router.replace("/admin");
+    } else if (user.role === "MONITOR") {
       router.replace("/monitoring");
+    } else {
+      router.replace("/");
     }
   }
 

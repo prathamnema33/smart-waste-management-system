@@ -6,6 +6,7 @@ from jose import jwt
 from sqlalchemy.orm import Session
 
 from database import get_db
+from demo_accounts import is_demo_email
 from models import User
 
 
@@ -14,6 +15,10 @@ if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY must be set in the environment")
 ALGORITHM = "HS256"
 security = HTTPBearer()
+
+
+def is_demo_account(user: User) -> bool:
+    return is_demo_email(user.email)
 
 
 def get_current_user(

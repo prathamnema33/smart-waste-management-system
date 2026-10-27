@@ -4,10 +4,19 @@ import re
 from sqlalchemy import case, func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from auth import ALGORITHM, SECRET_KEY, get_current_user, require_role, require_roles
+from fastapi.responses import JSONResponse
+from auth import (
+    ALGORITHM,
+    SECRET_KEY,
+    get_current_user,
+    is_demo_account,
+    require_role,
+    require_roles,
+)
 from database import get_db
+from demo_accounts import DEMO_ACCOUNT_EMAILS, DEMO_EMAIL_DOMAIN
 from team_zones import refresh_zone_for_area
 from models import (
     User,
@@ -27,7 +36,7 @@ from schemas import (
     UserResponse,
     LoginRequest,
 )
-from jose import jwt
+from jose import JWTError, jwt
 from datetime import datetime
 from schemas import (
     UserCreate,
@@ -62,6 +71,46 @@ app = FastAPI(
     title="Smart Waste Management API",
     version="1.0.0"
 )
+
+DEMO_READ_ONLY_PATHS = {
+    "/",
+    "/users/me",
+    "/citizen/dashboard",
+    "/worker/dashboard",
+    "/monitor/dashboard",
+    "/admin/dashboard",
+}
+
+
+@app.middleware("http")
+async def restrict_demo_accounts(request: Request, call_next):
+    if request.url.path == "/login" or request.method == "OPTIONS":
+        return await call_next(request)
+
+    authorization = request.headers.get("authorization", "")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.casefold() == "bearer" and token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            payload = {}
+
+        if payload.get("is_demo"):
+            if (
+                request.method not in {"GET", "HEAD"}
+                or request.url.path not in DEMO_READ_ONLY_PATHS
+            ):
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "detail": (
+                            "Public demo accounts are read-only and can access "
+                            "only their sample dashboard."
+                        )
+                    },
+                )
+
+    return await call_next(request)
 
 app.add_middleware(
     CORSMiddleware,
@@ -129,6 +178,11 @@ def register_user(
 
     name = registration.name.strip()
     email = registration.email.strip().lower()
+    if email in DEMO_ACCOUNT_EMAILS:
+        raise HTTPException(
+            status_code=409,
+            detail="This login ID is reserved for a public demo account",
+        )
     if not name:
         raise HTTPException(status_code=422, detail="Full name is required")
     valid_email = re.fullmatch(
@@ -329,6 +383,13 @@ def login(
         user_query = user_query.filter(
             User.user_id == (int(user_identifier) if user_identifier.isdecimal() else -1)
         )
+    elif identifier and identifier.casefold() in {
+        email.partition("@")[0].casefold() for email in DEMO_ACCOUNT_EMAILS
+    }:
+        user_query = user_query.filter(
+            func.lower(User.email)
+            == f"{identifier.strip().lower()}@{DEMO_EMAIL_DOMAIN}"
+        )
     elif identifier and identifier.isdecimal():
         user_query = user_query.filter(User.user_id == int(identifier))
     elif identifier:
@@ -354,7 +415,8 @@ def login(
 
     token_data = {
         "user_id": user.user_id,
-        "role": user.role
+        "role": user.role,
+        "is_demo": is_demo_account(user),
     }
 
     access_token = jwt.encode(
@@ -396,6 +458,16 @@ def monitor_dashboard(
 ):
     return {
         "message": "Welcome to Monitor Dashboard",
+        "user": current_user.name
+    }
+
+
+@app.get("/admin/dashboard")
+def admin_dashboard(
+    current_user: User = Depends(require_role("ADMIN"))
+):
+    return {
+        "message": "Welcome to Admin Dashboard",
         "user": current_user.name
     }
 @app.post(

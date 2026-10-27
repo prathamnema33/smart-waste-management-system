@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { api, clearToken, saveToken } from "@/lib/api";
+import { demoAccounts } from "@/lib/demoAccounts";
 import type { User } from "@/lib/types";
 import "./auth.css";
 
@@ -17,14 +18,14 @@ export default function LoginForm({
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState("");
   const isOperationsLogin = mode === "operations";
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function authenticate(loginIdentifier: string, loginPassword: string) {
     setBusy(true);
     setError("");
     try {
-      const session = await api.login(identifier.trim(), password);
+      const session = await api.login(loginIdentifier.trim(), loginPassword);
       saveToken(session.access_token);
       const user = await api.me();
       if (isOperationsLogin && user.role !== "ADMIN" && user.role !== "MONITOR") {
@@ -41,6 +42,28 @@ export default function LoginForm({
     }
   }
 
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await authenticate(identifier, password);
+  }
+
+  async function loginAsDemo(demo: (typeof demoAccounts)[number]) {
+    setIdentifier(demo.identifier);
+    setPassword(demo.password);
+    await authenticate(demo.identifier, demo.password);
+  }
+
+  async function copyCredentials(demo: (typeof demoAccounts)[number]) {
+    try {
+      await navigator.clipboard.writeText(
+        `User ID: ${demo.identifier}\nPassword: ${demo.password}`,
+      );
+      setCopied(demo.identifier);
+    } catch {
+      setError("Could not copy credentials. Please copy them from the card.");
+    }
+  }
+
   return (
     <main className="login-page">
       <section className="login-art">
@@ -53,6 +76,7 @@ export default function LoginForm({
         <div className="signal-row"><span /><span /><span /><b>LIVE OPERATIONS</b></div>
       </section>
       <section className="login-panel">
+        <div className="login-content">
         <div className="login-card">
           <p className="eyebrow">{isOperationsLogin ? "CONTROL ROOM ACCESS" : "SMART WASTE MANAGEMENT"}</p>
           <h2>{isOperationsLogin ? "Admin & Monitor sign in" : "Welcome back"}</h2>
@@ -102,6 +126,44 @@ export default function LoginForm({
               Don&apos;t have an account? <Link href="/signup">Sign Up</Link>
             </p>
           )}
+        </div>
+        {!isOperationsLogin && (
+          <section className="demo-access" aria-labelledby="demo-access-title">
+            <div className="demo-access-heading">
+              <div>
+                <p className="eyebrow">PUBLIC DEMONSTRATION ACCOUNTS</p>
+                <h2 id="demo-access-title">Explore Demo Accounts</h2>
+                <p className="muted">Public credentials · Read-only access · Synthetic sample data</p>
+              </div>
+            </div>
+            <div className="demo-account-grid">
+              {demoAccounts.map((demo) => (
+                <article className="demo-account-card" key={demo.identifier}>
+                  <h3>{demo.label}</h3>
+                  <p><span>User ID</span><code>{demo.identifier}</code></p>
+                  <p><span>Password</span><code>{demo.password}</code></p>
+                  <div className="demo-account-actions">
+                    <button
+                      className="primary-button compact"
+                      disabled={busy}
+                      onClick={() => void loginAsDemo(demo)}
+                      type="button"
+                    >
+                      {busy ? "Signing in..." : "Login as Demo"}
+                    </button>
+                    <button
+                      className="small-button"
+                      onClick={() => void copyCredentials(demo)}
+                      type="button"
+                    >
+                      {copied === demo.identifier ? "Copied" : "Copy credentials"}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
         </div>
       </section>
     </main>

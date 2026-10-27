@@ -7,6 +7,27 @@ $env:SECRET_KEY = (.\venv\Scripts\python.exe -c "import secrets; print(secrets.t
 .\venv\Scripts\python.exe -m uvicorn main:app --reload
 ```
 
+## Public demonstration accounts
+
+Create or refresh the four fixed public demo logins from this directory after
+configuring the database connection:
+
+```powershell
+.\venv\Scripts\python.exe seed_demo_accounts.py
+```
+
+The command is idempotent and only creates or refreshes the reserved demo
+accounts. It does not reset or delete records. Passwords are stored as bcrypt
+hashes. The demo IDs are `demo_admin`, `demo_monitor`, `demo_worker`, and
+`demo_citizen`; their public passwords are displayed on the login page.
+
+These are public, read-only accounts. Their dashboard displays only hard-coded
+synthetic sample data and never queries live dashboard or personal records.
+The API rejects demo writes and denies access to all other data endpoints.
+Never use demo credentials for real or privileged operations. Public signup
+continues to create citizen accounts only; administrator and monitor roles
+cannot be assigned through signup.
+
 The API requires a unique `SECRET_KEY` environment variable for signing access
 tokens. Generate a new value for local development as shown above and configure
 a stable secret through your deployment platform in production. Never commit

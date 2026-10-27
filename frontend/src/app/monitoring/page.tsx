@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MonitoringDashboard from "@/components/MonitoringDashboard";
+import DemoDashboard from "@/components/DemoDashboard";
 import { api, clearToken } from "@/lib/api";
+import { isDemoUser } from "@/lib/demoAccounts";
 import type { User } from "@/lib/types";
 import "../dashboard.css";
 
@@ -45,6 +47,9 @@ export default function MonitoringPage() {
 
   if (!user) {
     return <div className="center-state"><div className="spinner" />Verifying operations access...</div>;
+  }
+  if (isDemoUser(user)) {
+    return <DemoDashboard user={user} onSignOut={logout} />;
   }
 
   return (

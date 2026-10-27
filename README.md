@@ -100,6 +100,19 @@ The frontend proxies API requests server-side, so browser requests stay on the
 Vercel domain. Do not set `NEXT_PUBLIC_API_URL` in production; the Vercel
 server-side `API_URL` should point to the deployed Render API.
 
+## Public demo access
+
+The public login page has four demonstration accounts with visible credentials.
+After deploying the backend, run `python seed_demo_accounts.py` from the
+`backend` directory (or `.\venv\Scripts\python.exe seed_demo_accounts.py` in
+PowerShell) to create the accounts in the configured database. The command is
+idempotent and does not delete or reset data.
+
+Demo accounts are read-only: their dashboards use fictional sample data, and
+the API blocks their writes and access to live records. The demo credentials
+are intentionally public and must never be used as real administrator or
+monitor credentials. See [`backend/README.md`](backend/README.md) for details.
+
 ## Development
 
 Run the frontend lint command from `frontend`:

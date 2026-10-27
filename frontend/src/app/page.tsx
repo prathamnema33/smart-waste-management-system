@@ -4,8 +4,10 @@ import { FormEvent, ReactNode, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { api, clearToken } from "@/lib/api";
+import { isDemoUser } from "@/lib/demoAccounts";
 import type { Alert, AlertAnalytics, AnalyticsOverview, AreaAnalytics, CollectionRequest, Complaint, ComplaintAnalytics, DailyWaste, Penalty, RewardTotal, User, Vehicle, WasteReport, WasteTypeAnalytics, WorkerPerformance } from "@/lib/types";
 import MonitoringDashboard from "@/components/MonitoringDashboard";
+import DemoDashboard from "@/components/DemoDashboard";
 import LoginForm from "@/components/LoginForm";
 import "./dashboard.css";
 
@@ -43,7 +45,9 @@ export default function Home() {
         const authenticatedUser = await api.me();
         if (active) {
           setUser(authenticatedUser);
-          if (authenticatedUser.role === "ADMIN" || authenticatedUser.role === "MONITOR") {
+          if (authenticatedUser.role === "ADMIN") {
+            router.replace("/admin");
+          } else if (authenticatedUser.role === "MONITOR") {
             router.replace("/monitoring");
           }
         }
@@ -62,12 +66,18 @@ export default function Home() {
   if (booting) return <div className="center-state"><div className="spinner" />Restoring your session...</div>;
   function handleLogin(authenticatedUser: User) {
     setUser(authenticatedUser);
-    if (authenticatedUser.role === "ADMIN" || authenticatedUser.role === "MONITOR") {
+    if (authenticatedUser.role === "ADMIN") {
+      router.replace("/admin");
+    } else if (authenticatedUser.role === "MONITOR") {
       router.replace("/monitoring");
     }
   }
   if (!user) return <LoginForm mode="workspace" onLogin={handleLogin} />;
-  const role: AppRole = user.role === "ADMIN" ? "MONITOR" : user.role;
+  if (isDemoUser(user)) {
+    return <DemoDashboard user={user} onSignOut={() => { clearToken(); setUser(null); }} />;
+  }
+  if (user.role === "ADMIN") return null;
+  const role: AppRole = user.role;
   return <div className="app-shell"><aside className="sidebar"><div className="brand"><div className="brand-mark small">SW</div><div><strong>Smart Waste</strong><span>Operations</span></div></div><div className="workspace-label">{role === "MONITOR" ? "CONTROL ROOM" : `${role} WORKSPACE`}</div><nav>{nav[role].map((item, index) => <button key={item} className={page === item ? "nav-item active" : "nav-item"} onClick={() => setPage(item)}><span className="nav-index">0{index + 1}</span>{item}</button>)}</nav><div className="sidebar-foot"><div className="status-dot"><i /> API connected</div><button className="logout" onClick={() => { clearToken(); setUser(null); }}>Sign out <span>↗</span></button></div></aside><main className="main-content"><header className="topbar"><div><p className="breadcrumb">{role} / <strong>{page}</strong></p><h1>{page === "Overview" ? `Good day, ${user.name.split(" ")[0]}.` : page}</h1></div><div className="profile"><div className="avatar">{user.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</div><div><strong>{user.name}</strong><span>{user.email}</span></div></div></header>{error && <div className="global-error">{error}<button onClick={() => setError("")}>×</button></div>}<Dashboard role={role} page={page} setError={setError} /></main></div>;
 }
 
