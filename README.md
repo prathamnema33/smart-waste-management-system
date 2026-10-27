@@ -77,30 +77,28 @@ analytics-readiness test workflows. See
 [`backend/analytics/README.md`](backend/analytics/README.md) for analytics
 outputs and reporting guidance.
 
-## Deploy on Railway
+## Deploy with Render and Vercel
 
-The backend and frontend run as separate Railway services built from their
-respective Dockerfiles. Create a Railway project from this GitHub repository,
-add a PostgreSQL service, and create two application services:
+Deploy the backend and PostgreSQL database on Render, and the Next.js frontend
+on Vercel:
 
-- Backend: set the service root directory to `/backend`.
-- Frontend: set the service root directory to `/frontend`.
+1. On Render, create a PostgreSQL database and a web service from this GitHub
+   repository. Set the web service's root directory to `backend` and use its
+   Dockerfile.
+2. Set the Render web service's `DATABASE_URL` to the database's internal
+   connection string, `SECRET_KEY` to a unique generated secret, and
+   `FRONTEND_ORIGINS` to the Vercel site's HTTPS origin. Generate a secret with
+   `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+3. On Vercel, import this repository as a new project and set the project root
+   directory to `frontend`. Use the default Next.js build settings.
+4. Set the Vercel production environment variable `API_URL` to the Render
+   backend's public HTTPS URL, then redeploy the frontend.
+5. Apply the SQL migrations in `backend/migrations` to the Render PostgreSQL
+   database before using the application.
 
-Set these backend service variables in Railway:
-
-- `DATABASE_URL`: reference the PostgreSQL service's `DATABASE_URL`.
-- `SECRET_KEY`: generate a unique secret with
-  `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
-- `FRONTEND_ORIGINS`: the frontend's public HTTPS origin.
-
-Set the frontend service's `API_URL` to the backend's private Railway URL,
-including its port (for example, `http://backend.railway.internal:8000`). The
-frontend proxies API requests server-side, so the browser does not need direct
-access to the backend.
-
-Apply the SQL migrations in `backend/migrations` to the Railway PostgreSQL
-database before using the application. After Railway assigns a public frontend
-domain, set `FRONTEND_ORIGINS` to that origin and redeploy the backend.
+The frontend proxies API requests server-side, so browser requests stay on the
+Vercel domain. Do not set `NEXT_PUBLIC_API_URL` in production; the Vercel
+server-side `API_URL` should point to the deployed Render API.
 
 ## Development
 
