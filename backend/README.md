@@ -10,7 +10,9 @@ $env:SECRET_KEY = (.\venv\Scripts\python.exe -c "import secrets; print(secrets.t
 The API requires a unique `SECRET_KEY` environment variable for signing access
 tokens. Generate a new value for local development as shown above and configure
 a stable secret through your deployment platform in production. Never commit
-the secret to the repository.
+the secret to the repository. The database accepts either a `DATABASE_URL`
+connection string or the individual `DB_USER`, `DB_PASSWORD`, `DB_HOST`,
+`DB_PORT`, and `DB_NAME` variables.
 
 ## Public registration
 

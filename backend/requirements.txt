@@ -15,6 +15,7 @@ matplotlib>=3.8,<4
 SQLAlchemy==2.0.52
 passlib==1.7.4
 bcrypt==4.0.1
+python-jose[cryptography]==3.5.0
 shapely>=2.0,<3
 starlette==1.6.0
 typing-inspection==0.4.4

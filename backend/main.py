@@ -1,3 +1,4 @@
+import os
 import re
 
 from sqlalchemy import case, func
@@ -65,8 +66,12 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1:3000",
-        "http://localhost:3000",
+        origin.strip()
+        for origin in os.getenv(
+            "FRONTEND_ORIGINS",
+            "http://127.0.0.1:3000,http://localhost:3000",
+        ).split(",")
+        if origin.strip()
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+data/
+eda_output/
+db.env
+.env
+.env.*
+tests/

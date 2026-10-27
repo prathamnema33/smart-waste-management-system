@@ -77,6 +77,31 @@ analytics-readiness test workflows. See
 [`backend/analytics/README.md`](backend/analytics/README.md) for analytics
 outputs and reporting guidance.
 
+## Deploy on Railway
+
+The backend and frontend run as separate Railway services built from their
+respective Dockerfiles. Create a Railway project from this GitHub repository,
+add a PostgreSQL service, and create two application services:
+
+- Backend: set the service root directory to `/backend`.
+- Frontend: set the service root directory to `/frontend`.
+
+Set these backend service variables in Railway:
+
+- `DATABASE_URL`: reference the PostgreSQL service's `DATABASE_URL`.
+- `SECRET_KEY`: generate a unique secret with
+  `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+- `FRONTEND_ORIGINS`: the frontend's public HTTPS origin.
+
+Set the frontend service's `API_URL` to the backend's private Railway URL,
+including its port (for example, `http://backend.railway.internal:8000`). The
+frontend proxies API requests server-side, so the browser does not need direct
+access to the backend.
+
+Apply the SQL migrations in `backend/migrations` to the Railway PostgreSQL
+database before using the application. After Railway assigns a public frontend
+domain, set `FRONTEND_ORIGINS` to that origin and redeploy the backend.
+
 ## Development
 
 Run the frontend lint command from `frontend`:
