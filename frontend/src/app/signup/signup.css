@@ -1,0 +1,8 @@
+.signup-success { display: grid; gap: 14px; margin-top: 26px; }
+.signup-login-link { color: var(--teal); font-size: 12px; font-weight: 800; text-decoration: none; }
+.signup-login-link:hover { text-decoration: underline; }
+.login-card .signup-form { gap: 13px; }
+.login-card .signup-form label { display: grid; gap: 7px; color: #354940; font-size: 11px; font-weight: 700; }
+.login-card .signup-form label input { width: 100%; min-width: 0; border: 1px solid #dce5dc; border-radius: 5px; padding: 11px 12px; color: #233b33; font: inherit; font-weight: 400; }
+.login-card .signup-form label input:focus, .login-card .signup-form select:focus { outline: 2px solid #73a99b; outline-offset: 1px; }
+@media (max-width: 650px) { .signup-page .login-art { min-height: 320px; } }

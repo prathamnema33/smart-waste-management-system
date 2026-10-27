@@ -1,0 +1,6 @@
+.login-switch { margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.login-switch a { color: var(--teal); font-weight: 800; text-decoration: none; }
+.login-switch a:hover { text-decoration: underline; }
+.login-card select { width: 100%; border: 1px solid #dce5dc; border-radius: 5px; background: #fff; color: #233b33; padding: 12px; font: inherit; }
+.field-hint { display: block; margin-top: 6px; color: #718078; font-size: 10px; line-height: 1.5; }
+.success-box { background: #e1f1dc; border: 1px solid #a9cba5; color: #34734c; padding: 12px 14px; font-size: 12px; line-height: 1.5; }

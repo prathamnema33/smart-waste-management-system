@@ -1,0 +1,88 @@
+.monitoring-dashboard { display: grid; gap: 18px; }
+.monitoring-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 16px; background: #e8f1e7; border: 1px solid #d7e5d8; }
+.monitoring-toolbar p { margin-top: 5px; color: var(--muted); font-size: 11px; }
+.monitoring-toolbar p strong { color: var(--ink); }
+.monitoring-live-indicator { display: inline-flex; align-items: center; gap: 8px; color: var(--teal-dark); font: 500 10px 'DM Mono', monospace; letter-spacing: .08em; }
+.monitoring-live-indicator i { width: 7px; height: 7px; border-radius: 50%; background: #3b9d61; box-shadow: 0 0 0 4px #d0e5d0; }
+.monitoring-metrics { grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; }
+.monitoring-overview-grid { display: grid; grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr); gap: 18px; }
+.monitoring-status-panel, .monitoring-alert-panel, .monitoring-vehicle-panel, .monitoring-map-panel, .monitoring-pending-panel, .monitoring-ward-panel { min-width: 0; }
+.monitoring-panel-detail { margin-top: 6px; line-height: 1.5; }
+.monitoring-status-row { margin: 18px 0; }
+.monitoring-status-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font: 11px 'DM Mono', monospace; }
+.monitoring-status-heading > span { display: flex; align-items: center; gap: 8px; }
+.monitoring-status-heading strong { font-size: 12px; }
+.monitoring-status-heading strong small { margin-left: 5px; color: var(--muted); font-weight: 400; }
+.monitoring-status-dot, .monitoring-map-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--teal); }
+.monitoring-status-dot.collected, .monitoring-progress-track span.collected { background: #38a16c; }
+.monitoring-status-dot.in-progress, .monitoring-progress-track span.in-progress { background: #d69b22; }
+.monitoring-status-dot.assigned, .monitoring-progress-track span.assigned { background: #338cbd; }
+.monitoring-progress-track { height: 7px; margin-top: 8px; overflow: hidden; background: #edf1ed; border-radius: 10px; }
+.monitoring-progress-track span { display: block; height: 100%; min-width: 0; border-radius: inherit; transition: width .3s ease; }
+.monitoring-efficiency { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin-top: 25px; padding-top: 16px; border-top: 1px solid var(--line); }
+.monitoring-efficiency span { color: var(--muted); font-size: 11px; }
+.monitoring-efficiency strong { color: var(--teal-dark); font-size: 19px; }
+.monitoring-efficiency small { grid-column: 1 / -1; color: var(--muted); font-size: 10px; }
+.monitoring-alert-list { max-height: 440px; overflow: auto; }
+.monitoring-alert { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; border-bottom: 1px solid #edf1ed; }
+.monitoring-alert:last-child { border-bottom: 0; }
+.monitoring-alert-copy { min-width: 0; flex: 1; }
+.monitoring-alert-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.monitoring-alert-heading strong { font-size: 11px; }
+.monitoring-alert-copy p { margin: 7px 0 5px; color: #52635a; font-size: 11px; line-height: 1.5; }
+.monitoring-alert-copy > small { color: var(--muted); font-size: 10px; }
+.monitoring-alert .severity { flex: 0 0 auto; background: #edf1ed; color: #52635a; }
+.monitoring-alert .severity.critical, .monitoring-alert .severity.high { background: #fbe2dc; color: #a54c43; }
+.monitoring-alert .severity.medium { background: #fff0cf; color: #9b681b; }
+.monitoring-table { min-width: 760px; }
+.monitoring-table td strong, .monitoring-table td small { display: block; }
+.monitoring-table td strong { font-size: 11px; }
+.monitoring-table td small { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.monitoring-vehicle-panel .monitoring-table { min-width: 860px; }
+.monitoring-pending-panel .monitoring-table { min-width: 900px; }
+.monitoring-ward-table { min-width: 900px; }
+.monitoring-reasons { max-width: 250px; }
+.monitoring-attention { display: inline-block; padding: 4px 7px; background: #edf1ed; color: #58685e; font: 10px 'DM Mono', monospace; }
+.monitoring-attention.high { background: #fbe2dc; color: #a54c43; }
+.monitoring-attention.watch { background: #fff0cf; color: #9b681b; }
+.monitoring-map-panel { padding-bottom: 18px; }
+.monitoring-map-canvas { height: 430px; width: 100%; background: #eaf0e9; z-index: 0; }
+.monitoring-map-state, .monitoring-empty { display: grid; min-height: 100px; place-items: center; padding: 20px; color: var(--muted); text-align: center; font-size: 12px; }
+.monitoring-map-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; color: #52635a; font-size: 10px; }
+.monitoring-legend-item { display: inline-flex; align-items: center; gap: 7px; }
+.monitoring-legend-item small { color: var(--muted); }
+.monitoring-map-dot.vehicles { background: #2563eb; }
+.monitoring-map-dot.waste-reports { background: #d69b22; }
+.monitoring-map-dot.collections { background: #087f72; }
+.monitoring-map-dot.alerts { background: #d34e42; }
+.monitoring-popup { display: grid; gap: 5px; min-width: 150px; font: 11px Manrope, sans-serif; }
+.monitoring-popup strong { font-size: 12px; }
+.monitoring-popup span { color: #52635a; }
+.monitoring-route-shell { min-height: 100vh; padding: clamp(18px, 4vw, 56px); }
+.monitoring-route-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 auto 28px; max-width: 1500px; }
+.monitoring-route-header h1 { margin: 8px 0; }
+.monitoring-route-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.monitoring-route-actions a { display: inline-flex; align-items: center; text-decoration: none; }
+.monitoring-route-shell > .monitoring-dashboard { max-width: 1500px; margin: 0 auto; }
+.monitoring-error, .monitoring-stale-warning { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; border: 1px solid #edc2b8; background: #fff2ef; color: #8e4439; font-size: 12px; }
+.monitoring-error p { margin-top: 4px; }
+.monitoring-stale-warning { justify-content: flex-start; padding: 10px 12px; }
+
+@media (max-width: 1100px) {
+  .monitoring-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .monitoring-overview-grid { grid-template-columns: 1fr; }
+  .monitoring-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .monitoring-toolbar { align-items: flex-start; }
+  .monitoring-map-canvas { height: 340px; }
+  .monitoring-route-header { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .monitoring-toolbar { flex-direction: column; }
+  .monitoring-metrics { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .monitoring-metrics .metric-card { min-height: 110px; padding: 14px; }
+  .monitoring-map-legend { gap: 10px; }
+}
